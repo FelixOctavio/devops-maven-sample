@@ -34,6 +34,20 @@ pipeline {
                 }
             }
         }
+
+        stage('Sonarqube Analysis - SAST') {
+            steps {
+                       sh "mvn sonar:sonar \
+                        -Dsonar.projectKey=java-demo \
+                        -Dsonar.host.url=http://10.63.21.216:9000" \
+                        -Dsonar.login=$SONAR_CREDENTIAL_ID 
+           timeout(time: 2, unit: 'MINUTES') {
+                      script {
+                        waitForQualityGate abortPipeline: true
+                    }
+                }
+              }
+        }
  
         stage ('build & push') {
             steps {
